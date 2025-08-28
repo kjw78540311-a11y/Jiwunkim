@@ -201,3 +201,56 @@ window.addEventListener('resize', () => {
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
+import { FontLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/FontLoader.js';
+import { TextGeometry } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/geometries/TextGeometry.js';
+
+// Scene, Camera, Renderer
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x000000);
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+camera.position.z = 50;
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// OrbitControls
+const controls = new OrbitControls(camera, renderer.domElement);
+
+// Light
+const light = new THREE.PointLight(0xffffff, 1);
+light.position.set(50, 50, 50);
+scene.add(light);
+
+// 3D Text
+const loader = new FontLoader();
+loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function(font){
+    const textGeometry = new TextGeometry('Jiwun Kim', {
+        font: font,
+        size: 10,
+        height: 2,
+        curveSegments: 12,
+    });
+    textGeometry.center(); // 화면 중앙
+
+    const textMaterial = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
+    const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+    scene.add(textMesh);
+
+    // Animation
+    function animate() {
+        requestAnimationFrame(animate);
+        textMesh.rotation.y += 0.01;
+        renderer.render(scene, camera);
+    }
+    animate();
+});
+
+// Window resize 대응
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
