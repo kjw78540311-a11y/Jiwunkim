@@ -136,3 +136,68 @@ window.addEventListener('resize', () => {
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 });
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
+import { FontLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/loaders/FontLoader.js';
+import { TextGeometry } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/geometries/TextGeometry.js';
+import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js';
+
+// 1. Scene, Camera, Renderer
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x000000);
+
+const camera = new THREE.PerspectiveCamera(
+    75,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+);
+camera.position.z = 50;
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// 2. OrbitControls
+const controls = new OrbitControls(camera, renderer.domElement);
+
+// 3. Light
+const light = new THREE.PointLight(0xffffff, 1);
+light.position.set(50, 50, 50);
+scene.add(light);
+
+// 4. Load Font and Create 3D Text
+const loader = new FontLoader();
+loader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', function(font){
+    const textGeometry = new TextGeometry('Jiwun Kim', {
+        font: font,
+        size: 10,
+        height: 2,
+        curveSegments: 12,
+        bevelEnabled: true,
+        bevelThickness: 0.5,
+        bevelSize: 0.3,
+        bevelSegments: 5
+    });
+
+    const textMaterial = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
+    const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+
+    textGeometry.center(); // 가운데 정렬
+    scene.add(textMesh);
+
+    // Animate text
+    function animateText() {
+        requestAnimationFrame(animateText);
+        textMesh.rotation.y += 0.01;
+        textMesh.rotation.x += 0.005;
+        renderer.render(scene, camera);
+    }
+    animateText();
+});
+
+// 5. Window Resize 대응
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
